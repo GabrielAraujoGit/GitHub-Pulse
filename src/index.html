@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Wrapped - Futuristic Dev Edition</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --neon-blue: #00f3ff;
+            --neon-purple: #b026ff;
+            --neon-green: #39ff14;
+            --neon-pink: #ff006e;
+            --dark-bg: #0a0e27;
+            --card-bg: rgba(20, 25, 45, 0.8);
+            --glow: 0 0 20px var(--neon-blue);
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: var(--dark-bg);
+            color: var(--neon-blue);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .grid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 243, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+            z-index: 0;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        .section {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s, transform 0.6s;
+        }
+
+        .section.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section.hidden {
+            display: none;
+        }
+
+        /* Boot Screen */
+        .boot-screen h1 {
+            font-size: 3rem;
+            text-shadow: var(--glow);
+            margin-bottom: 2rem;
+            animation: glitch 3s infinite;
+        }
+
+        @keyframes glitch {
+            0%, 90%, 100% { transform: translate(0); }
+            92% { transform: translate(-2px, 2px); }
+            94% { transform: translate(2px, -2px); }
+            96% { transform: translate(-2px, -2px); }
+        }
+
+        .typing-text {
+            font-size: 1.5rem;
+            color: var(--neon-green);
+            margin-bottom: 2rem;
+            min-height: 2rem;
+        }
+
+        .progress-bar {
+            width: 400px;
+            height: 4px;
+            background: rgba(0, 243, 255, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 3rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+            width: 0%;
+            transition: width 2s ease;
+            box-shadow: 0 0 10px var(--neon-blue);
+        }
+
+        .btn {
+            padding: 1rem 3rem;
+            font-size: 1.2rem;
+            font-family: 'Courier New', monospace;
+            background: transparent;
+            border: 2px solid var(--neon-blue);
+            color: var(--neon-blue);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .btn:hover {
+            background: var(--neon-blue);
+            color: var(--dark-bg);
+            box-shadow: var(--glow);
+            transform: scale(1.05);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 243, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        /* Input Screen */
+        .input-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .glass-card {
+            background: rgba(20, 25, 45, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            border-radius: 10px;
+            padding: 3rem;
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.2);
+        }
+
+        .input-label {
+            font-size: 1rem;
+            color: var(--neon-purple);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .username-input {
+            width: 100%;
+            padding: 1.5rem;
+            font-size: 1.8rem;
+            font-family: 'Courier New', monospace;
+            background: rgba(10, 14, 39, 0.8);
+            border: 2px solid var(--neon-blue);
+            border-radius: 5px;
+            color: var(--neon-blue);
+            text-align: center;
+            transition: all 0.3s;
+            box-shadow: inset 0 0 10px rgba(0, 243, 255, 0.1);
+        }
+
+        .username-input:focus {
+            outline: none;
+            border-color: var(--neon-purple);
+            box-shadow: 0 0 20px rgba(176, 38, 255, 0.5), inset 0 0 20px rgba(0, 243, 255, 0.2);
+        }
+
+        .username-input.error {
+            border-color: var(--neon-pink);
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .error-message {
+            color: var(--neon-pink);
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            text-align: center;
+            animation: glitch 1s infinite;
+        }
+
+        .loading-text {
+            color: var(--neon-green);
+            margin-top: 1rem;
+            text-align: center;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .scanner-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--neon-green), transparent);
+            animation: scan 2s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(400px); }
+        }
+
+        /* Profile Screen */
+        .profile-container {
+            text-align: center;
+            max-width: 800px;
+        }
+
+        .avatar-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 2rem;
+        }
+
+        .avatar {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 3px solid var(--neon-blue);
+            box-shadow: 0 0 30px var(--neon-blue);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .hologram-ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 220px;
+            height: 220px;
+            border: 2px solid var(--neon-purple);
+            border-radius: 50%;
+            animation: rotate 4s linear infinite;
+            opacity: 0.5;
+        }
+
+        @keyframes rotate {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .profile-info h2 {
+            font-size: 2.5rem;
+            color: var(--neon-blue);
+            text-shadow: var(--glow);
+            margin-bottom: 1rem;
+        }
+
+        .profile-info p {
+            font-size: 1.2rem;
+            color: var(--neon-green);
+            margin: 0.5rem 0;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            width: 100%;
+            margin-top: 2rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            border-radius: 10px;
+            padding: 2rem;
+            transition: all 0.3s;
+            animation: slideIn 0.6s ease-out backwards;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.4);
+            border-color: var(--neon-purple);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-value {
+            font-size: 3rem;
+            color: var(--neon-blue);
+            text-shadow: var(--glow);
+            font-weight: bold;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: var(--neon-purple);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 0.5rem;
+        }
+
+        /* DNA Profile */
+        .dna-container {
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .dna-title {
+            font-size: 2rem;
+            color: var(--neon-purple);
+            text-align: center;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 20px var(--neon-purple);
+        }
+
+        .dna-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .dna-bar {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(176, 38, 255, 0.3);
+            border-radius: 10px;
+            padding: 1.5rem;
+            overflow: hidden;
+        }
+
+        .dna-bar-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            color: var(--neon-blue);
+        }
+
+        .dna-bar-fill-container {
+            height: 20px;
+            background: rgba(0, 243, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .dna-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--neon-purple), var(--neon-blue));
+            border-radius: 10px;
+            transition: width 1s ease;
+            box-shadow: 0 0 10px var(--neon-purple);
+        }
+
+        /* Rank Screen */
+        .rank-container {
+            text-align: center;
+            max-width: 600px;
+        }
+
+        .rank-badge {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 2rem;
+            border: 3px solid var(--neon-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            box-shadow: 0 0 40px var(--neon-green);
+            animation: pulse 2s infinite;
+        }
+
+        .rank-title {
+            font-size: 3rem;
+            color: var(--neon-green);
+            text-shadow: 0 0 30px var(--neon-green);
+            margin-bottom: 1rem;
+            animation: glitch 2s infinite;
+        }
+
+        .rank-score {
+            font-size: 2rem;
+            color: var(--neon-blue);
+            margin-bottom: 2rem;
+        }
+
+        /* Navigation */
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 3rem;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid var(--neon-purple);
+            color: var(--neon-purple);
+        }
+
+        .btn-secondary:hover {
+            background: var(--neon-purple);
+            color: var(--dark-bg);
+            box-shadow: 0 0 20px var(--neon-purple);
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-bg"></div>
+
+    <!-- Boot Screen -->
+    <section id="boot" class="section active">
+        <h1>DEVELOPER ANALYSIS SYSTEM</h1>
+        <div class="typing-text" id="bootText"></div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="bootProgress"></div>
+        </div>
+        <button class="btn" id="startBtn">START ANALYSIS</button>
+    </section>
+
+    <!-- Input Screen -->
+    <section id="input" class="section hidden">
+        <div class="input-container">
+            <div class="glass-card">
+                <div class="input-label">◆ ENTER GITHUB IDENTITY ◆</div>
+                <input 
+                    type="text" 
+                    class="username-input" 
+                    id="usernameInput" 
+                    placeholder="@your-github-username"
+                    autocomplete="off"
+                >
+                <div id="inputFeedback"></div>
+                <div class="nav-buttons" style="justify-content: center;">
+                    <button class="btn" id="analyzeBtn">ANALYZE</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Profile Screen -->
+    <section id="profile" class="section hidden">
+        <div class="profile-container">
+            <div class="typing-text">Profile successfully decoded.</div>
+            <div class="avatar-container">
+                <img id="avatarImg" class="avatar" src="" alt="Avatar">
+                <div class="hologram-ring"></div>
+            </div>
+            <div class="profile-info">
+                <h2 id="profileName"></h2>
+                <p id="profileBio"></p>
+                <p id="profileLocation"></p>
+                <p id="profileCreated"></p>
+            </div>
+            <div class="nav-buttons" style="justify-content: center;">
+                <button class="btn" id="continueBtn1">CONTINUE</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Screen -->
+    <section id="stats" class="section hidden">
+        <h2 style="font-size: 2.5rem; color: var(--neon-blue); text-shadow: var(--glow); margin-bottom: 2rem;">
+            CORE STATISTICS
+        </h2>
+        <div class="stats-grid" id="statsGrid"></div>
+        <div class="nav-buttons" style="justify-content: center;">
+            <button class="btn" id="continueBtn2">CONTINUE</button>
+        </div>
+    </section>
+
+    <!-- DNA Screen -->
+    <section id="dna" class="section hidden">
+        <div class="dna-container">
+            <h2 class="dna-title">🧬 DEVELOPER DNA ANALYSIS</h2>
+            <div class="dna-bars" id="dnaBars"></div>
+            <div class="nav-buttons" style="justify-content: center;">
+                <button class="btn" id="continueBtn3">CONTINUE</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Rank Screen -->
+    <section id="rank" class="section hidden">
+        <div class="rank-container">
+            <div class="rank-badge" id="rankBadge">⭐</div>
+            <h2 class="rank-title" id="rankTitle">LEGENDARY ENGINEER</h2>
+            <div class="rank-score">DEVELOPER SCORE: <span id="rankScore">0</span></div>
+            <p style="color: var(--neon-green); font-size: 1.2rem; margin-bottom: 2rem;">
+                Your development profile has been archived.
+            </p>
+            <div class="nav-buttons" style="justify-content: center;">
+                <button class="btn" onclick="location.reload()">NEW ANALYSIS</button>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        let userData = {};
+        let userRepos = [];
+
+        // Boot Screen Animation
+        const bootText = document.getElementById('bootText');
+        const bootProgress = document.getElementById('bootProgress');
+        const messages = [
+            'Initializing systems...',
+            'Loading neural network...',
+            'Connecting to GitHub database...',
+            'Ready for analysis.'
+        ];
+        let msgIndex = 0;
+
+        function typeMessage(message, callback) {
+            let i = 0;
+            bootText.textContent = '';
+            const interval = setInterval(() => {
+                bootText.textContent += message[i];
+                i++;
+                if (i >= message.length) {
+                    clearInterval(interval);
+                    if (callback) setTimeout(callback, 500);
+                }
+            }, 50);
+        }
+
+        function bootSequence() {
+            if (msgIndex < messages.length) {
+                typeMessage(messages[msgIndex], () => {
+                    msgIndex++;
+                    bootProgress.style.width = (msgIndex / messages.length * 100) + '%';
+                    bootSequence();
+                });
+            }
+        }
+
+        bootSequence();
+
+        // Navigation
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(s => {
+                s.classList.remove('active');
+                s.classList.add('hidden');
+            });
+            const section = document.getElementById(sectionId);
+            section.classList.remove('hidden');
+            setTimeout(() => section.classList.add('active'), 50);
+        }
+
+        document.getElementById('startBtn').addEventListener('click', () => {
+            showSection('input');
+        });
+
+        // GitHub API
+        async function fetchGitHubData(username) {
+            const input = document.getElementById('usernameInput');
+            const feedback = document.getElementById('inputFeedback');
+            
+            input.disabled = true;
+            feedback.innerHTML = '<div class="loading-text">Scanning GitHub identity...</div><div class="scanner-line"></div>';
+            
+            try {
+                const userResponse = await fetch(`https://api.github.com/users/${username}`);
+                if (!userResponse.ok) throw new Error('User not found');
+                
+                userData = await userResponse.json();
+                
+                const reposResponse = await fetch(`https://api.github.com/users/${username}/repos?per_page=100`);
+                userRepos = await reposResponse.json();
+                
+                setTimeout(() => {
+                    displayProfile();
+                    showSection('profile');
+                }, 1500);
+                
+            } catch (error) {
+                input.classList.add('error');
+                feedback.innerHTML = '<div class="error-message">⚠ Identity not found in GitHub database. Check your GitHub ID.</div>';
+                input.disabled = false;
+                setTimeout(() => {
+                    input.classList.remove('error');
+                    feedback.innerHTML = '';
+                }, 3000);
+            }
+        }
+
+        document.getElementById('analyzeBtn').addEventListener('click', () => {
+            const username = document.getElementById('usernameInput').value.trim().replace('@', '');
+            if (username) {
+                fetchGitHubData(username);
+            }
+        });
+
+        document.getElementById('usernameInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('analyzeBtn').click();
+            }
+        });
+
+        // Display Profile
+        function displayProfile() {
+            document.getElementById('avatarImg').src = userData.avatar_url;
+            document.getElementById('profileName').textContent = userData.name || userData.login;
+            document.getElementById('profileBio').textContent = userData.bio || 'No bio available';
+            document.getElementById('profileLocation').textContent = userData.location ? `📍 ${userData.location}` : '';
+            
+            const createdYear = new Date(userData.created_at).getFullYear();
+            const yearsActive = new Date().getFullYear() - createdYear;
+            document.getElementById('profileCreated').textContent = `⏰ ${yearsActive} years on GitHub`;
+        }
+
+        document.getElementById('continueBtn1').addEventListener('click', () => {
+            displayStats();
+            showSection('stats');
+        });
+
+        // Display Stats
+        function displayStats() {
+            const totalStars = userRepos.reduce((sum, repo) => sum + repo.stargazers_count, 0);
+            const totalForks = userRepos.reduce((sum, repo) => sum + repo.forks_count, 0);
+            
+            const languages = {};
+            userRepos.forEach(repo => {
+                if (repo.language) {
+                    languages[repo.language] = (languages[repo.language] || 0) + 1;
+                }
+            });
+            const topLanguage = Object.keys(languages).sort((a, b) => languages[b] - languages[a])[0] || 'Unknown';
+            
+            const mostPopular = userRepos.sort((a, b) => b.stargazers_count - a.stargazers_count)[0];
+            
+            const stats = [
+                { icon: '📦', value: userRepos.length, label: 'Repositories' },
+                { icon: '⭐', value: totalStars, label: 'Total Stars' },
+                { icon: '🔱', value: totalForks, label: 'Total Forks' },
+                { icon: '💻', value: topLanguage, label: 'Top Language' },
+                { icon: '🏆', value: mostPopular?.name || 'N/A', label: 'Most Popular' },
+                { icon: '👥', value: userData.followers, label: 'Followers' }
+            ];
+            
+            const grid = document.getElementById('statsGrid');
+            grid.innerHTML = '';
+            
+            stats.forEach((stat, index) => {
+                const card = document.createElement('div');
+                card.className = 'stat-card';
+                card.style.animationDelay = `${index * 0.1}s`;
+                card.innerHTML = `
+                    <div class="stat-icon">${stat.icon}</div>
+                    <div class="stat-value">${typeof stat.value === 'number' ? stat.value : stat.value.substring(0, 15)}</div>
+                    <div class="stat-label">${stat.label}</div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        document.getElementById('continueBtn2').addEventListener('click', () => {
+            displayDNA();
+            showSection('dna');
+        });
+
+        // Display DNA
+        function displayDNA() {
+            const totalStars = userRepos.reduce((sum, repo) => sum + repo.stargazers_count, 0);
+            const totalForks = userRepos.reduce((sum, repo) => sum + repo.forks_count, 0);
+            
+            const traits = [
+                { label: 'Open Source Contributor', value: Math.min((totalStars / 100) * 100, 100) },
+                { label: 'Code Architect', value: Math.min((userRepos.length / 50) * 100, 100) },
+                { label: 'Community Impact', value: Math.min((userData.followers / 100) * 100, 100) },
+                { label: 'Repository Maintainer', value: Math.min((totalForks / 50) * 100, 100) },
+                { label: 'Full Stack Operative', value: Math.min((Object.keys(userRepos.reduce((acc, r) => { if(r.language) acc[r.language] = 1; return acc; }, {})).length / 10) * 100, 100) }
+            ];
+            
+            const container = document.getElementById('dnaBars');
+            container.innerHTML = '';
+            
+            traits.forEach((trait, index) => {
+                const bar = document.createElement('div');
+                bar.className = 'dna-bar';
+                bar.innerHTML = `
+                    <div class="dna-bar-label">
+                        <span>${trait.label}</span>
+                        <span>${Math.round(trait.value)}%</span>
+                    </div>
+                    <div class="dna-bar-fill-container">
+                        <div class="dna-bar-fill" style="width: 0%"></div>
+                    </div>
+                `;
+                container.appendChild(bar);
+                
+                setTimeout(() => {
+                    bar.querySelector('.dna-bar-fill').style.width = trait.value + '%';
+                }, index * 200);
+            });
+        }
+
+        document.getElementById('continueBtn3').addEventListener('click', () => {
+            displayRank();
+            showSection('rank');
+        });
+
+        // Display Rank
+        function displayRank() {
+            const totalStars = userRepos.reduce((sum, repo) => sum + repo.stargazers_count, 0);
+            const score = (userRepos.length * 10) + (totalStars * 5) + (userData.followers * 2);
+            
+            let rank, badge;
+            if (score < 500) {
+                rank = 'JUNIOR OPERATIVE';
+                badge = '🔷';
+            } else if (score < 2000) {
+                rank = 'CODE SPECIALIST';
+                badge = '💠';
+            } else if (score < 5000) {
+                rank = 'SENIOR ARCHITECT';
+                badge = '⭐';
+            } else {
+                rank = 'LEGENDARY ENGINEER';
+                badge = '👑';
+            }
+            
+            document.getElementById('rankBadge').textContent = badge;
+            document.getElementById('rankTitle').textContent = rank;
+            document.getElementById('rankScore').textContent = score;
+        }
+    </script>
+</body>
+</html>
